@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.vid-container video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
+.player-container {
+  position: relative;
+  top: 20vh;
+  z-index: 1;
+}
+
+.sound-picker button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+.time-select button {
+  margin: 5px;
+  padding: 8px 16px;
+}
+
+.time-display {
+  margin: 20px;
+  font-size: 2rem;
+}
+
+.play {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
