@@ -1,46 +1,56 @@
 body {
   margin: 0;
-  font-family: sans-serif;
-  background: #000;
+  font-family: Arial, sans-serif;
+  background: #222;
   color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+#app {
+  width: 100%;
+  max-width: 800px;
   text-align: center;
+}
+
+.vid-container {
+  width: 100%;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .vid-container video {
-  position: fixed;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 .player-container {
-  position: relative;
-  top: 20vh;
-  z-index: 1;
+  margin-top: 20px;
 }
 
-.sound-picker button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 1rem;
-}
-
-.time-select button {
+.sound-picker button,
+#time-select button,
+.play {
   margin: 5px;
-  padding: 8px 16px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #444;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.sound-picker button:hover,
+#time-select button:hover,
+.play:hover {
+  background-color: #666;
 }
 
 .time-display {
-  margin: 20px;
-  font-size: 2rem;
-}
-
-.play {
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  margin-top: 20px;
+  font-size: 24px;
+  margin-top: 15px;
 }

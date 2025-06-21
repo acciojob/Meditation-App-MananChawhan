@@ -1,74 +1,76 @@
 const app = document.getElementById("app");
-const video = document.getElementById("bgVideo");
-const audio = document.getElementById("meditationSound");
-const playButton = document.querySelector(".play");
+const video = document.querySelector(".video");
+const audio = document.querySelector(".audio");
+const playBtn = document.querySelector(".play");
 const timeDisplay = document.querySelector(".time-display");
 const timeButtons = document.querySelectorAll("#time-select button");
 const soundButtons = document.querySelectorAll(".sound-picker button");
 
-let duration = 600;
-let currentTime = duration;
+let fakeDuration = 600; // default 10 mins
 let isPlaying = false;
-let timer;
 
-const updateDisplay = () => {
-  const mins = Math.floor(currentTime / 60);
-  const secs = currentTime % 60;
-  timeDisplay.textContent = `${mins}:${secs}`; 
-};
+// Update time display
+function updateTimeDisplay(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  timeDisplay.textContent = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+}
 
-const togglePlay = () => {
-  if (!audio.src) return;
-
-  if (isPlaying) {
-    clearInterval(timer);
-    audio.pause();
-    playButton.textContent = "Play";
+// Play/Pause toggle
+playBtn.addEventListener("click", () => {
+  if (!isPlaying) {
+    audio.play();
+    video.play();
+    playBtn.textContent = "Pause";
+    isPlaying = true;
   } else {
-    if (audio.readyState >= 2) {
-      timer = setInterval(() => {
-        if (currentTime > 0) {
-          currentTime--;
-          updateDisplay();
-        } else {
-          clearInterval(timer);
-          audio.pause();
-          audio.currentTime = 0;
-          playButton.textContent = "Play";
-          isPlaying = false;
-        }
-      }, 1000);
-      audio.play();
-      playButton.textContent = "Pause";
-    } else {
-      console.warn("Audio source not ready");
-    }
+    audio.pause();
+    video.pause();
+    playBtn.textContent = "Play";
+    isPlaying = false;
   }
-  isPlaying = !isPlaying;
-};
+});
 
-playButton.addEventListener("click", togglePlay);
-
+// Time select buttons
 timeButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    duration = parseInt(button.getAttribute("data-time"));
-    currentTime = duration;
-    updateDisplay();
+  button.addEventListener("click", function () {
+    fakeDuration = this.getAttribute("data-time");
+    updateTimeDisplay(fakeDuration);
   });
 });
 
+// Sound & Video picker
 soundButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    const sound = button.getAttribute("data-sound");
-    const vid = button.getAttribute("data-video");
+  button.addEventListener("click", function () {
+    const sound = this.getAttribute("data-sound");
+    const vid = this.getAttribute("data-video");
+
     audio.src = sound;
-    audio.load();
-    video.querySelector("source").src = vid;
-    video.load();
+    video.src = vid;
+
+    // Restart playing
     if (isPlaying) {
       audio.play();
+      video.play();
     }
   });
 });
 
-updateDisplay();
+// Time tracking
+audio.ontimeupdate = () => {
+  let currentTime = audio.currentTime;
+  let remainingTime = fakeDuration - currentTime;
+  updateTimeDisplay(remainingTime);
+
+  if (currentTime >= fakeDuration) {
+    audio.pause();
+    video.pause();
+    audio.currentTime = 0;
+    video.currentTime = 0;
+    playBtn.textContent = "Play";
+    isPlaying = false;
+  }
+};
+
+// Set initial time display
+updateTimeDisplay(fakeDuration);
