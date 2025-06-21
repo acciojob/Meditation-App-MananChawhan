@@ -2,36 +2,164 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Meditation App</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .app {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .vid-container {
+      position: relative;
+      width: 100%;
+      height: 60vh;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .player-container {
+      margin-top: 20px;
+    }
+    .sound-picker {
+      margin-top: 20px;
+    }
+    .sound-picker button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .time-select {
+      margin-top: 20px;
+    }
+    .time-select button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .time-display {
+      font-size: 2rem;
+      margin-top: 20px;
+    }
+    .play {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
+  <div class="app">
     <div class="vid-container">
-      <video class="video" src="Sounds/beach.mp4" loop muted></video>
+      <video class="bg-video" src="https://www.w3schools.com/html/mov_bbb.mp4" loop muted></video>
     </div>
 
     <div class="player-container">
-      <audio class="audio" src="Sounds/beach.mp3"></audio>
-
-      <div class="sound-picker">
-        <button data-sound="Sounds/beach.mp3" data-video="Sounds/beach.mp4">Meditation-A</button>
-        <button data-sound="Sounds/rain.mp3" data-video="Sounds/rain.mp4">Meditation-B</button>
-      </div>
-
-      <div id="time-select">
-        <button id="smaller-mins" data-time="120">2 min</button>
-        <button id="medium-mins" data-time="300">5 min</button>
-        <button id="long-mins" data-time="600">10 min</button>
-      </div>
-
-      <div class="time-display">10:0</div>
-
-      <button class="play">Play</button>
+      <audio class="meditation-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
     </div>
+
+    <div class="sound-picker">
+      <button data-sound="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" data-video="https://www.w3schools.com/html/mov_bbb.mp4">Meditation A</button>
+      <button data-sound="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" data-video="https://cdn.pixabay.com/vimeo/398048073/Rain%20drops%20on%20the%20window%20glass%20in%20HD%20_%20Free%20stock%20video%20-%20Pixabay.mp4?width=640&hash=3b91cd1e7fa6bc54c33f61e406c2a3a204a38789">Meditation B</button>
+    </div>
+
+    <div class="time-select" id="time-select">
+      <button id="smaller-mins" class="smaller-mins">2 min</button>
+      <button id="medium-mins" class="medium-mins">5 min</button>
+      <button id="long-mins" class="long-mins">10 min</button>
+    </div>
+
+    <div class="time-display">10:0</div>
+
+    <button class="play">Play</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const audio = document.querySelector('.meditation-audio');
+    const video = document.querySelector('.bg-video');
+    const playBtn = document.querySelector('.play');
+    const timeDisplay = document.querySelector('.time-display');
+    const timeButtons = document.querySelectorAll('#time-select button');
+    const soundButtons = document.querySelectorAll('.sound-picker button');
+
+    let duration = 600; // Default 10 min
+    let timer;
+    let isPlaying = false;
+
+    function updateTimeDisplay(time) {
+      const mins = Math.floor(time / 60);
+      const secs = Math.floor(time % 60);
+      timeDisplay.textContent = ${mins}:${secs};
+    }
+
+    function startCountdown() {
+      let currentTime = duration;
+      updateTimeDisplay(currentTime);
+
+      timer = setInterval(() => {
+        if (currentTime <= 0) {
+          clearInterval(timer);
+          audio.pause();
+          video.pause();
+          isPlaying = false;
+          playBtn.textContent = "Play";
+        } else {
+          currentTime--;
+          updateTimeDisplay(currentTime);
+        }
+      }, 1000);
+    }
+
+    playBtn.addEventListener('click', async () => {
+      try {
+        if (!isPlaying) {
+          await audio.play();
+          video.play();
+          startCountdown();
+          playBtn.textContent = "Pause";
+        } else {
+          audio.pause();
+          video.pause();
+          clearInterval(timer);
+          playBtn.textContent = "Play";
+        }
+        isPlaying = !isPlaying;
+      } catch (err) {
+        console.error("Playback error:", err);
+      }
+    });
+
+    timeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const [mins] = button.textContent.split(' ');
+        duration = parseInt(mins) * 60;
+        updateTimeDisplay(duration);
+      });
+    });
+
+    soundButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const soundSrc = button.getAttribute('data-sound');
+        const videoSrc = button.getAttribute('data-video');
+        audio.src = soundSrc;
+        video.src = videoSrc;
+        if (isPlaying) {
+          audio.play();
+          video.play();
+        }
+      });
+    });
+
+    // Initial time display
+    updateTimeDisplay(duration);
+  </script>
 </body>
 </html>
